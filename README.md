@@ -1,4 +1,4 @@
-# Vault Keeper 🔐
+# Vault Keeper ☢️
 ## Beginner-Friendly Encrypted Password Vault (Python)
 
   - Vault Keeper is a beginner-friendly Python learning project for building a basic encrypted password vault from scratch.
@@ -37,17 +37,18 @@
 
 ## What Vault Keeper is Not
 
-  - ❌ A production password manager
+❌ A production password manager
 
-  - ❌ A replacement for audited security tools
+❌ A replacement for audited security tools
 
-  - ❌ Safe for real credentials
+❌ Safe for real credentials
 
 ---
 
 ## How It Works 🔎
 
 At a high level:
+
   1. User sets a master password
   2. A cryptographic key is derived from that password
   3. Password entries are encrypted
@@ -58,7 +59,7 @@ At a high level:
 
 ## Threat Model (Educational)
 
-Vault Keeper assumes a local attacker who may gain access to the vault file but does not know the master password.
+Vault Keeper assumes a local attacker who may gain access to the vault file but does *not* know the master password.
 
 **Defends against:**
 
@@ -78,7 +79,9 @@ Vault Keeper assumes a local attacker who may gain access to the vault file but 
 
   - Advanced cryptographic attacks
 
-⚠️ This threat model is intentionally limited for learning.
+>
+>⚠️ This threat model is intentionally limited for learning.
+>
 
 ---
 
@@ -141,6 +144,10 @@ Enter master password:
 
   - Prefer audited tools for real-world use
 
+---
+
 ## License
 
-- MIT License — see `LICENSE` for details.
+- MIT License - see `LICENSE` for details.
+
+---
