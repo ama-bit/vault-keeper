@@ -50,10 +50,14 @@
 At a high level:
 
   1. User sets a master password
-  2. A cryptographic key is derived from that password
-  3. Password entries are encrypted
-  4. Encrypted data is written to disk
-  5. Data is decrypted only with the correct master password
+     
+  3. A cryptographic key is derived from that password
+     
+  5. Password entries are encrypted
+     
+  7. Encrypted data is written to disk
+     
+  9. Data is decrypted only with the correct master password
 
 ---
 
@@ -87,15 +91,15 @@ Vault Keeper assumes a local attacker who may gain access to the vault file but 
 
 ## Tools 🧰
 
-1. Python standard library
+- Python standard library
 
-2. hashlib
+- hashlib
 
-3. secrets
+- secrets
 
-4. os
+- os
 
-5. json
+- json
 
 (Crypto choices will be documented as the project evolves.)
 
@@ -134,7 +138,7 @@ Enter master password:
 
 ---
 
-## Security Notes ⚠️
+## Security Notes 🔏
 
   - Master password strength matters
 
