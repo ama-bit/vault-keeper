@@ -2,11 +2,6 @@
 Vault Keeper
 Beginner-Friendly Encrypted Password Vault (Learning Project)
 
-This file is intentionally written to be:
-- Easy to read
-- Easy to reason about
-- Easy to extend
-
 The goal is to understand *how encrypted password storage works*,
 not to build a production-ready password manager.
 """
@@ -162,7 +157,7 @@ def main():
     Features like adding entries come later.
     """
 
-    print("Welcome to Vault Keeper")
+    print("Welcome to Vault Keeper!")
 
     if not os.path.exists(VAULT_FILE):
         master_password = input("Create a master password: ")
