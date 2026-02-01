@@ -9,15 +9,15 @@
 
 ## Project Goals 🥅
 
-  - Learn how passwords can be encrypted at rest
+  1. Learn how passwords can be encrypted at rest
     
-  - Understand encryption vs hashing
+  2. Understand encryption vs hashing
     
-  - Practice deriving keys from a master password
+  3. Practice deriving keys from a master password
     
-  - Safely store and retrieve secrets from disk
+  4. Safely store and retrieve secrets from disk
     
-  - Think clearly about security assumptions and limits
+  5. Think clearly about security assumptions and limits
 
 ---
 
@@ -51,13 +51,13 @@ At a high level:
 
   1. User sets a master password
      
-  3. A cryptographic key is derived from that password
+  2. A cryptographic key is derived from that password
      
-  5. Password entries are encrypted
+  3. Password entries are encrypted
      
-  7. Encrypted data is written to disk
+  4. Encrypted data is written to disk
      
-  9. Data is decrypted only with the correct master password
+  5. Data is decrypted only with the correct master password
 
 ---
 
