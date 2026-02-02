@@ -60,7 +60,7 @@ At a high level:
 
 ---
 
-## Educational Threat Model 🧠
+## Educational Threat Model 
 
 Vault Keeper assumes a local attacker who may gain access to the vault file but does *not* know the master password.
 
