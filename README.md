@@ -119,7 +119,7 @@ Vault Keeper assumes a local attacker who may gain access to the vault file but 
 ## Example of Output
 
 ```bash
-Welcome to VaultKeeper 🔐
+Welcome to VaultKeeper
 
 Create a master password:
 ✔ Vault initialized.
