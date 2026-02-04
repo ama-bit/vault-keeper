@@ -6,7 +6,7 @@ Vault Keeper is a beginner-friendly Python learning project for building a basic
 
 ---
 
-## Project Goals
+## Goals
 
   1. Learn how passwords can be encrypted at rest
     
@@ -20,7 +20,7 @@ Vault Keeper is a beginner-friendly Python learning project for building a basic
 
 ---
 
-## What Vault Keeper Does ❓
+## What Does Vault Keeper Do❓
 
   - Derives an encryption key from a master password
 
@@ -34,7 +34,7 @@ Vault Keeper is a beginner-friendly Python learning project for building a basic
 
 ---
 
-## What Vault Keeper is Not
+## Vault Keeper is NOT
 
 ❌ A production password manager
 
