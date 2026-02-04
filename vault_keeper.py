@@ -1,9 +1,11 @@
 """
 Vault Keeper
+
 Beginner-Friendly Encrypted Password Vault (Learning Project)
 
 The goal is to understand *how encrypted password storage works*,
 not to build a production-ready password manager.
+
 """
 
 # =========================
@@ -17,7 +19,7 @@ import secrets     # Cryptographically secure random values
 
 
 # =========================
-# Constants & Configuration
+# Constants & Config.
 # =========================
 
 VAULT_FILE = "vault.json"   # Where encrypted data will be stored on disk
@@ -30,6 +32,7 @@ ITERATIONS = 100_000        # PBKDF2 work factor (slow on purpose)
 # =========================
 
 def derive_key(master_password: str, salt: bytes) -> bytes:
+    
     """
     Derives a cryptographic key from a master password.
 
@@ -51,6 +54,7 @@ def derive_key(master_password: str, salt: bytes) -> bytes:
 
 
 def xor_encrypt(data: bytes, key: bytes) -> bytes:
+    
     """
     VERY SIMPLE encryption using XOR.
 
@@ -70,6 +74,7 @@ def xor_encrypt(data: bytes, key: bytes) -> bytes:
 
 
 def xor_decrypt(ciphertext: bytes, key: bytes) -> bytes:
+    
     """
     XOR decryption is identical to encryption.
     Applying the same operation reverses the data.
@@ -82,6 +87,7 @@ def xor_decrypt(ciphertext: bytes, key: bytes) -> bytes:
 # =========================
 
 def initialize_vault(master_password: str):
+    
     """
     Creates a new encrypted vault file.
 
@@ -113,6 +119,7 @@ def initialize_vault(master_password: str):
 
 
 def unlock_vault(master_password: str) -> dict | None:
+    
     """
     Unlocks and decrypts the vault using the master password.
 
