@@ -1,7 +1,7 @@
 """
-Vault Keeper
+Welcome to Vault Keeper
 
-Beginner-Friendly Encrypted Password Vault (Learning Project)
+A Beginner-Friendly, Encrypted Password Vault made in Python as a Learning Project.
 
 The goal is to understand *how encrypted password storage works*,
 not to build a production-ready password manager.
@@ -37,8 +37,11 @@ def derive_key(master_password: str, salt: bytes) -> bytes:
     Derives a cryptographic key from a master password.
 
     Why this matters:
+    
     - Passwords are low entropy
+    
     - Keys must be high entropy
+    
     - PBKDF2 makes brute-force attacks harder
 
     This function turns a human password into a fixed-length key.
@@ -58,7 +61,7 @@ def xor_encrypt(data: bytes, key: bytes) -> bytes:
     """
     VERY SIMPLE encryption using XOR.
 
-    Educational only.
+    Educational only!
     This demonstrates the *idea* of encryption,
     not secure cryptography.
 
@@ -124,8 +127,11 @@ def unlock_vault(master_password: str) -> dict | None:
     Unlocks and decrypts the vault using the master password.
 
     Returns:
+    
     - Decrypted vault dictionary if successful
+    
     - None if password is incorrect or data is invalid
+    
     """
 
     if not os.path.exists(VAULT_FILE):
@@ -158,8 +164,11 @@ def main():
     Entry point for the program.
 
     For Day One, this only supports:
+    
     - Initializing a vault
+    
     - Unlocking a vault
+
 
     Features like adding entries come later.
     """
