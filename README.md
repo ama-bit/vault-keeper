@@ -1,46 +1,46 @@
 # Vault Keeper ☢️
 ## Python Password Vault
 
-Vault Keeper is a beginner-friendly Python learning project for building a basic encrypted password manager (vault) from scratch. The focus is on understanding how encrypted password storage works, not on creating a production-ready password manager.
+Vault Keeper is a beginner-friendly Python learning project for building a basic encrypted password manager (vault) from scratch. The focus is on understanding how encrypted password storage works, and not on creating a production-ready password manager.
     
 
 ---
 
 ## Goals
 
-  1. Learn how passwords can be encrypted at rest
+  1. Learn how passwords can be encrypted at rest.
     
-  2. Understand encryption vs hashing
+  2. Understand encryption vs hashing.
     
-  3. Practice deriving keys from a master password
+  3. Practice deriving keys from a master password.
     
-  4. Safely store and retrieve secrets from disk
+  4. Safely store and retrieve secrets from disk.
     
-  5. Think clearly about security assumptions and limits
+  5. Think clearly about security assumptions and limits.
 
 ---
 
 ## What Does Vault Keeper Do❓
 
-  - Derives an encryption key from a master password
+  - Derives an encryption key from a master password.
 
-  - Encrypts password entries before saving them
+  - Encrypts password entries before saving them.
 
-  - Stores secrets in a local encrypted vault file
+  - Stores secrets in a local encrypted vault file.
 
-  - Decrypts data only after successful authentication
+  - Decrypts data only after successful authentication.
 
-  - Demonstrates common secure-storage patterns
+  - Demonstrates common secure-storage patterns.
 
 ---
 
-## Vault Keeper is NOT
+## Vault Keeper is NOT:
 
-❌ A production password manager
+❌ A production password manager.
 
-❌ A replacement for audited security tools
+❌ A replacement for audited security tools.
 
-❌ Safe for real credentials
+❌ Safe for real credentials.
 
 ---
 
@@ -71,6 +71,7 @@ Vault Keeper assumes a local attacker who may gain access to the vault file but 
   - Accidental exposure of secrets
 
   - Basic offline inspection
+    
 
 **Does not defend against:**
 
