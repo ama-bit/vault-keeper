@@ -42,7 +42,7 @@ def derive_key(master_password: str, salt: bytes) -> bytes:
     
     - Keys must be high entropy
     
-    - PBKDF2 makes brute-force attacks more more costly for both time and skill
+    - PBKDF2 makes brute-force attacks more costly for both time and skill
 
     This function turns a human password into a fixed-length key.
     """
