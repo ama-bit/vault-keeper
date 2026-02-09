@@ -1,9 +1,9 @@
 """
-Welcome to Vault Keeper
+Welcome to Vault Keeper!
 
-A Beginner-Friendly, Encrypted Password Vault made in Python as a Learning Project.
+This is a Beginner-Friendly, Encrypted Password Manager (vault) made in Python as a Learning Project.
 
-The goal is to understand *how encrypted password storage works*,
+The goal is to understand and demonstrate *how encrypted password storage works*,
 not to build a production-ready password manager.
 
 """
@@ -42,7 +42,7 @@ def derive_key(master_password: str, salt: bytes) -> bytes:
     
     - Keys must be high entropy
     
-    - PBKDF2 makes brute-force attacks harder
+    - PBKDF2 makes brute-force attacks more more costly for both time and skill
 
     This function turns a human password into a fixed-length key.
     """
