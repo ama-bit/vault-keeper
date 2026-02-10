@@ -101,7 +101,7 @@ Vault Keeper assumes a local attacker who may gain access to the vault file but 
 
 - json
 
-(Crypto choices will be documented as the project evolves.)
+*(Crypto choices will be documented as the project evolves.)*
 
 ---
 
