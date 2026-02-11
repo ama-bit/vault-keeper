@@ -1,172 +1,169 @@
 """
-Welcome to Vault Keeper!
-
-This is a Beginner-Friendly, Encrypted Password Manager (vault)
-made in Python as a Learning Project.
-
-Educational use only — not production secure.
+Vault Keeper
+Python Password Manager – Educational Use Only
 """
 
 # =========================
 # Imports
 # =========================
-
-import os
-import json
-import hashlib
-import secrets
-
-
-# =========================
-# Constants & Config
-# =========================
-
-VAULT_FILE = "vault.json"
-SALT_SIZE = 16
-ITERATIONS = 100_000
-
+import os          # File operations
+import json        # Read/write JSON vault
+import hashlib     # Key derivation
+import secrets     # Random salt generation
+import getpass     # Hidden password input
 
 # =========================
-# Helper Functions
+# Constants
 # =========================
+VAULT_FILE = "vault.json"  # Vault filename
+SALT_SIZE = 16             # Number of bytes for salt
+ITERATIONS = 100_000       # PBKDF2 iterations for key derivation
+APP_STATE = "LOCKED"       # Current session state
 
-def derive_key(master_password: str, salt: bytes) -> bytes:
-    return hashlib.pbkdf2_hmac(
-        hash_name="sha256",
-        password=master_password.encode(),
-        salt=salt,
-        iterations=ITERATIONS,
-        dklen=32
-    )
+# =========================
+# UI Helpers
+# =========================
+def banner():
+    """Prints the program banner."""
+    print("""
+====================================
+    Welcome to Vault Keeper!
+====================================
 
+A Python Password Manager for Educational Use Only!
+""")
+
+def status_bar(state: str, width: int = 50):
+    """Displays a CLI-style status bar for the current app state."""
+    print(f"\n{' STATUS: ' + state + ' ':-^{width}}")
+
+def menu() -> str:
+    """Displays menu options and returns the user's choice."""
+    print("""
+----------- MENU ------------------
+
+1) Add Entry
+2) View Entries
+3) Exit
+
+-----------------------------------
+""")
+    return input("Select option > ").strip()
+
+# =========================
+# Crypto Helpers
+# =========================
+def derive_key(password: str, salt: bytes) -> bytes:
+    """Derive a secure 32-byte key from the master password and salt."""
+    return hashlib.pbkdf2_hmac("sha256", password.encode(), salt, ITERATIONS, dklen=32)
 
 def xor_encrypt(data: bytes, key: bytes) -> bytes:
-    encrypted = bytearray()
-    for i in range(len(data)):
-        encrypted.append(data[i] ^ key[i % len(key)])
-    return bytes(encrypted)
-
+    """Encrypt or decrypt data using XOR (symmetric)."""
+    return bytes(data[i] ^ key[i % len(key)] for i in range(len(data)))
 
 def xor_decrypt(ciphertext: bytes, key: bytes) -> bytes:
+    """Decrypt using XOR (same as encryption)."""
     return xor_encrypt(ciphertext, key)
 
-
 # =========================
-# Vault Operations
+# Vault Helpers
 # =========================
-
-def initialize_vault(master_password: str):
-    if os.path.exists(VAULT_FILE):
-        print("Vault already exists.")
-        return
-
+def initialize_vault(master_password: str) -> tuple[dict, bytes]:
+    """
+    Creates a new empty vault with a fresh random salt.
+    Returns the vault dictionary and salt for the session.
+    """
     salt = secrets.token_bytes(SALT_SIZE)
     key = derive_key(master_password, salt)
+    vault = {}  # Empty vault dictionary
+    encrypted = xor_encrypt(json.dumps(vault).encode(), key)
 
-    empty_vault = json.dumps({}).encode()
-    encrypted_vault = xor_encrypt(empty_vault, key)
-
-    vault_data = {
-        "salt": salt.hex(),
-        "data": encrypted_vault.hex()
-    }
-
+    # Save encrypted vault to disk
     with open(VAULT_FILE, "w") as f:
-        json.dump(vault_data, f)
+        json.dump({"salt": salt.hex(), "data": encrypted.hex()}, f, indent=2)
 
-    print("✔ Vault initialized.")
+    status_bar("NEW VAULT")
+    print("Vault initialized.")
+    return vault, salt
 
-
-def unlock_vault(master_password: str):
-    if not os.path.exists(VAULT_FILE):
-        print("Vault not found.")
-        return None, None
-
+def unlock_vault(master_password: str, salt: bytes) -> dict:
+    """
+    Unlocks the vault using the master password and salt.
+    Returns the decrypted vault dictionary.
+    """
     with open(VAULT_FILE, "r") as f:
         vault_data = json.load(f)
 
-    salt = bytes.fromhex(vault_data["salt"])
     encrypted_data = bytes.fromhex(vault_data["data"])
-
     key = derive_key(master_password, salt)
+    decrypted = xor_decrypt(encrypted_data, key)
 
-    try:
-        decrypted = xor_decrypt(encrypted_data, key)
-        vault = json.loads(decrypted.decode())
-        return vault, salt
-    except Exception:
-        print("Incorrect master password.")
-        return None, None
-
+    return json.loads(decrypted.decode())
 
 def save_vault(vault: dict, master_password: str, salt: bytes):
+    """Encrypts and saves the vault dictionary to disk."""
     key = derive_key(master_password, salt)
-    plaintext = json.dumps(vault).encode()
-    encrypted = xor_encrypt(plaintext, key)
-
-    vault_data = {
-        "salt": salt.hex(),
-        "data": encrypted.hex()
-    }
+    encrypted = xor_encrypt(json.dumps(vault).encode(), key)
 
     with open(VAULT_FILE, "w") as f:
-        json.dump(vault_data, f)
+        json.dump({"salt": salt.hex(), "data": encrypted.hex()}, f, indent=2)
 
-    print("✔ Vault saved.")
-
+    status_bar("SAVED")
+    print("Vault saved.")
 
 def add_entry(vault: dict) -> dict:
+    """Prompts the user to add a new service entry."""
     service = input("Service name: ")
     username = input("Username: ")
-    password = input("Password: ")
+    password = getpass.getpass("Password: ")
 
-    vault[service] = {
-        "username": username,
-        "password": password
-    }
-
-    print(f"✔ Entry added for '{service}'.")
+    vault[service] = {"username": username, "password": password}
+    print(f"Entry added for '{service}'.")
     return vault
 
-
 # =========================
-# Main Program Flow
+# Main Program
 # =========================
-
 def main():
-    print("Welcome to Vault Keeper!")
+    global APP_STATE
+    APP_STATE = "LOCKED"  # Reset session state
 
-    if not os.path.exists(VAULT_FILE):
-        master_password = input("Create a master password: ")
-        initialize_vault(master_password)
-        return
+    banner()
 
-    master_password = input("Enter master password to unlock vault: ")
-    vault, salt = unlock_vault(master_password)
+    # -------------------------------
+    # Fresh session: delete old vault silently
+    # -------------------------------
+    if os.path.exists(VAULT_FILE):
+        os.remove(VAULT_FILE)
 
-    if vault is None:
-        return
+    # -------------------------------
+    # Create new vault and unlock for this session
+    # -------------------------------
+    master_password = getpass.getpass("Create master password: ")
+    vault, salt = initialize_vault(master_password)
+    vault = unlock_vault(master_password, salt)
+    APP_STATE = "UNLOCKED"
+    status_bar(APP_STATE)
 
-    print("✔ Vault unlocked.")
-
-    print("\n1. View entries")
-    print("2. Add entry")
-    choice = input("> ")
-
-    if choice == "1":
-        print(json.dumps(vault, indent=2))
-
-    elif choice == "2":
-        vault = add_entry(vault)
-        save_vault(vault, master_password, salt)
-
-    else:
-        print("Invalid option.")
-
+    # -------------------------------
+    # Main menu loop
+    # -------------------------------
+    while True:
+        choice = menu()
+        if choice == "1":  # Add Entry
+            vault = add_entry(vault)
+            save_vault(vault, master_password, salt)
+        elif choice == "2":  # View Entries
+            print(json.dumps(vault, indent=2))
+        elif choice == "3":  # Exit
+            status_bar("EXITING")
+            print("Goodbye.")
+            break
+        else:
+            print("Invalid option.")
 
 # =========================
-# Run Program
+# Entry Point
 # =========================
-
 if __name__ == "__main__":
     main()
