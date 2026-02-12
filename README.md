@@ -1,9 +1,9 @@
-# Vault Keeper ☢️
-## Python Password Vault
+# Vault Keeper ☢️  
+## Python Password Vault (Educational Demo)
 
-- Vault Keeper is a beginner-friendly Python learning project that walks through building a simple encrypted password manager (vault) from scratch. 
+- Vault Keeper is a beginner-friendly Python learning project demonstrating how a simple **in-memory password manager** works.  
 
-- The goal is to understand how encrypted password storage works.
+- The goal is to understand **password encryption, key derivation, and secure handling** in a safe, interactive session.  
 
 - This is **not** a production-ready password manager.
 
@@ -11,39 +11,39 @@
 
 ## Goals
 
-  1. Learn how passwords can be encrypted at rest.
-    
-  2. Understand encryption vs hashing.
-    
-  3. Practice deriving keys from a master password.
-    
-  4. Safely store and retrieve secrets from disk.
-    
-  5. Think clearly about security assumptions and limits.
+1. Learn how passwords can be encrypted at rest (in memory).
+     
+3. Understand *encryption vs hashing*.  
+
+4. Practice deriving keys from a master password **(PBKDF2-HMAC-SHA256)**.  
+
+5. Safely manage secrets in a session-only vault.  
+
+6. Think critically about security assumptions and limitations.  
 
 ---
 
-## What Does Vault Keeper Do❓
+## What Vault Keeper Does ❓
 
-  - Derives an encryption key from a master password.
+- Derives an encryption key from a master password.  
 
-  - Encrypts password entries before saving them.
+- Encrypts password entries before storing them in memory.  
 
-  - Stores secrets in a local encrypted vault file.
+- Decrypts data only after successful authentication.  
 
-  - Decrypts data only after successful authentication.
+- Demonstrates secure-storage patterns and workflow.  
 
-  - Demonstrates common secure-storage patterns.
+- Provides an interactive CLI for adding and viewing entries.  
 
 ---
 
 ## Vault Keeper is NOT:
 
-❌ A production password manager.
+❌ A production password manager.  
 
-❌ A replacement for audited security tools.
+❌ A replacement for audited security tools.  
 
-❌ Safe for real credentials.
+❌ Safe for real credentials.  
 
 ---
 
@@ -51,106 +51,110 @@
 
 At a high level:
 
-  1. User sets a master password
+1. User creates a master password.
      
-  2. A cryptographic key is derived from that password
-     
-  3. Password entries are encrypted
-     
-  4. Encrypted data is written to disk
-     
-  5. Data is decrypted only with the correct master password
+3. A cryptographic key is derived from the master password using PBKDF2.
+    
+5. Password entries are encrypted in memory with XOR (for demo purposes).
+   
+7. Entries remain in memory only; nothing is saved to disk.
+   
+9. Data is decrypted only with the master password.  
 
 ---
 
-## Educational Threat Model 
+## Educational Threat Model  
 
-Vault Keeper assumes a local attacker who may gain access to the vault file but does *not* know the master password.
+Vault Keeper assumes a **local, educational environment**.  
 
 **Defends against:**
 
-  - Plaintext password storage
+- Storing plaintext passwords in memory carelessly.
+  
+*Demonstrating encryption/decryption workflow*. 
 
-  - Accidental exposure of secrets
+**Does not defend against:**  
 
-  - Basic offline inspection
-    
+- Malware or keyloggers.
+  
+- Weak master passwords.
+  
+- OS compromise or advanced cryptographic attacks.  
 
-**Does not defend against:**
-
-  - Malware or keyloggers
-
-  - Weak master passwords
-
-  - OS compromise
-
-  - Advanced cryptographic attacks
-
->
->⚠️ This threat model is intentionally limited for learning.
->
+> ⚠️ This threat model is intentionally limited for learning purposes.  
 
 ---
 
 ## Tools 🧰
 
-- Python standard library
+- Python standard library  
 
-- hashlib
+- `hashlib` (PBKDF2 key derivation)  
 
-- secrets
+- `secrets` (random salt generation)  
 
-- os
+- `getpass` (hidden password input)  
 
-- json
+- `json` (dict serialization for encryption/decryption)  
 
-*(Crypto choices will be documented as the project evolves.)*
+*(All operations occur in memory; no files are written.)*  
 
 ---
 
 ## How to Run ⏯️
 
-1. Clone the repository
+1. Ensure Python 3.9+ is installed
 
-2. Ensure Python 3.9+ is installed
+2. Clone the repository  
 
-3. Run:
+3. Navigate to directory: `cd vault-keeper`
 
-`python vault-keeper.py`
+4. Run:
+
+```bash
+python vault-keeper.py
+```
 
 ---
 
 ## Example of Output
 
 ```bash
-Welcome to VaultKeeper
+====================================
+    Welcome to Vault Keeper!
+====================================
 
-Create a master password:
+Create master password:
 ✔ Vault initialized.
 
 Add entry:
 Service: github
 Username: v4u1t-k33p3r
 Password: ********
-✔ Entry encrypted and stored.
+✔ Entry added to vault (in-memory).
 
-Unlock vault:
-Enter master password:
-✔ Vault unlocked.
+View vault:
+{
+  "github": {
+    "username": "v4u1t-k33p3r",
+    "password": "badpassword321"
+  }
+}
+
+Exit program:
+Thank you & Goodbye!
 ```
 
 ---
 
 ## Security Notes 🔏
 
-  - Master password strength matters
-
-  - Encrypted ≠ invulnerable
-
-  - Never hard-code secrets
-
-  - Prefer audited tools for real-world use
-
+  - Master password strength is important.
+    
+  - XOR encryption is for **demonstration only** and **not** secure for real passwords.
+    
+  - Vault exists only in memory; restarting the script clears all data.
+    
 ---
 
 ## License
