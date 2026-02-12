@@ -1,195 +1,169 @@
 """
-Welcome to Vault Keeper!
-
-This is a Beginner-Friendly, Encrypted Password Manager (vault) made in Python as a Learning Project.
-
-The goal is to understand and demonstrate *how encrypted password storage works*,
-not to build a production-ready password manager.
-
+Vault Keeper
+Python Password Manager – Educational Use Only
 """
 
 # =========================
 # Imports
 # =========================
-
-import os          # File system operations (checking, reading, writing files)
-import json        # Structured storage for vault data
-import hashlib     # Cryptographic hashing & key derivation
-import secrets     # Cryptographically secure random values
-
-
-# =========================
-# Constants & Config.
-# =========================
-
-VAULT_FILE = "vault.json"   # Where encrypted data will be stored on disk
-SALT_SIZE = 16              # Bytes of randomness for key derivation
-ITERATIONS = 100_000        # PBKDF2 work factor (slow on purpose)
-
+import os          # File operations
+import json        # Read/write JSON vault
+import hashlib     # Key derivation
+import secrets     # Random salt generation
+import getpass     # Hidden password input
 
 # =========================
-# Helper Functions
+# Constants
 # =========================
+VAULT_FILE = "vault.json"  # Vault filename
+SALT_SIZE = 16             # Number of bytes for salt
+ITERATIONS = 100_000       # PBKDF2 iterations for key derivation
+APP_STATE = "LOCKED"       # Current session state
 
-def derive_key(master_password: str, salt: bytes) -> bytes:
-    
-    """
-    Derives a cryptographic key from a master password.
+# =========================
+# UI Helpers
+# =========================
+def banner():
+    """Prints the program banner."""
+    print("""
+====================================
+    Welcome to Vault Keeper!
+====================================
 
-    Why this matters:
-    
-    - Passwords are low entropy
-    
-    - Keys must be high entropy
-    
-    - PBKDF2 makes brute-force attacks more costly for both time and skill
+A Python Password Manager for Educational Use Only!
+""")
 
-    This function turns a human password into a fixed-length key.
-    """
+def status_bar(state: str, width: int = 50):
+    """Displays a CLI-style status bar for the current app state."""
+    print(f"\n{' STATUS: ' + state + ' ':-^{width}}")
 
-    return hashlib.pbkdf2_hmac(
-        hash_name="sha256",               # Hash algorithm
-        password=master_password.encode(),# Convert string → bytes
-        salt=salt,                        # Random salt
-        iterations=ITERATIONS,            # Slows down attackers
-        dklen=32                          # 256-bit derived key
-    )
+def menu() -> str:
+    """Displays menu options and returns the user's choice."""
+    print("""
+----------- MENU ------------------
 
+1) Add Entry
+2) View Entries
+3) Exit
+
+-----------------------------------
+""")
+    return input("Select option > ").strip()
+
+# =========================
+# Crypto Helpers
+# =========================
+def derive_key(password: str, salt: bytes) -> bytes:
+    """Derive a secure 32-byte key from the master password and salt."""
+    return hashlib.pbkdf2_hmac("sha256", password.encode(), salt, ITERATIONS, dklen=32)
 
 def xor_encrypt(data: bytes, key: bytes) -> bytes:
-    
-    """
-    VERY SIMPLE encryption using XOR.
-
-    Educational only!
-    This demonstrates the *idea* of encryption,
-    not secure cryptography.
-
-    Real systems use audited libraries like Fernet or AES-GCM.
-    """
-
-    encrypted = bytearray()
-
-    for i in range(len(data)):
-        encrypted.append(data[i] ^ key[i % len(key)])
-
-    return bytes(encrypted)
-
+    """Encrypt or decrypt data using XOR (symmetric)."""
+    return bytes(data[i] ^ key[i % len(key)] for i in range(len(data)))
 
 def xor_decrypt(ciphertext: bytes, key: bytes) -> bytes:
-    
-    """
-    XOR decryption is identical to encryption.
-    Applying the same operation reverses the data.
-    """
+    """Decrypt using XOR (same as encryption)."""
     return xor_encrypt(ciphertext, key)
 
-
 # =========================
-# Vault Operations
+# Vault Helpers
 # =========================
-
-def initialize_vault(master_password: str):
-    
+def initialize_vault(master_password: str) -> tuple[dict, bytes]:
     """
-    Creates a new encrypted vault file.
-
-    Steps:
-    1. Generate a random salt
-    2. Derive a key from the master password
-    3. Store metadata (salt + empty vault)
+    Creates a new empty vault with a fresh random salt.
+    Returns the vault dictionary and salt for the session.
     """
-
-    if os.path.exists(VAULT_FILE):
-        print("Vault already exists.")
-        return
-
     salt = secrets.token_bytes(SALT_SIZE)
     key = derive_key(master_password, salt)
+    vault = {}  # Empty vault dictionary
+    encrypted = xor_encrypt(json.dumps(vault).encode(), key)
 
-    empty_vault = json.dumps({}).encode()
-    encrypted_vault = xor_encrypt(empty_vault, key)
-
-    vault_data = {
-        "salt": salt.hex(),
-        "data": encrypted_vault.hex()
-    }
-
+    # Save encrypted vault to disk
     with open(VAULT_FILE, "w") as f:
-        json.dump(vault_data, f)
+        json.dump({"salt": salt.hex(), "data": encrypted.hex()}, f, indent=2)
 
-    print("✔ Vault initialized.")
+    status_bar("NEW VAULT")
+    print("Vault initialized.")
+    return vault, salt
 
-
-def unlock_vault(master_password: str) -> dict | None:
-    
+def unlock_vault(master_password: str, salt: bytes) -> dict:
     """
-    Unlocks and decrypts the vault using the master password.
-
-    Returns:
-    
-    - Decrypted vault dictionary if successful
-    
-    - None if password is incorrect or data is invalid
-    
+    Unlocks the vault using the master password and salt.
+    Returns the decrypted vault dictionary.
     """
-
-    if not os.path.exists(VAULT_FILE):
-        print("Vault not found.")
-        return None
-
     with open(VAULT_FILE, "r") as f:
         vault_data = json.load(f)
 
-    salt = bytes.fromhex(vault_data["salt"])
     encrypted_data = bytes.fromhex(vault_data["data"])
-
     key = derive_key(master_password, salt)
+    decrypted = xor_decrypt(encrypted_data, key)
 
-    try:
-        decrypted = xor_decrypt(encrypted_data, key)
-        return json.loads(decrypted.decode())
-    except Exception:
-        # If decryption fails, the password is likely wrong
-        print("Incorrect master password.")
-        return None
+    return json.loads(decrypted.decode())
 
+def save_vault(vault: dict, master_password: str, salt: bytes):
+    """Encrypts and saves the vault dictionary to disk."""
+    key = derive_key(master_password, salt)
+    encrypted = xor_encrypt(json.dumps(vault).encode(), key)
+
+    with open(VAULT_FILE, "w") as f:
+        json.dump({"salt": salt.hex(), "data": encrypted.hex()}, f, indent=2)
+
+    status_bar("SAVED")
+    print("Vault saved.")
+
+def add_entry(vault: dict) -> dict:
+    """Prompts the user to add a new service entry."""
+    service = input("Service name: ")
+    username = input("Username: ")
+    password = getpass.getpass("Password: ")
+
+    vault[service] = {"username": username, "password": password}
+    print(f"Entry added for '{service}'.")
+    return vault
 
 # =========================
-# Main Program Flow
+# Main Program
 # =========================
-
 def main():
-    """
-    Entry point for the program.
+    global APP_STATE
+    APP_STATE = "LOCKED"  # Reset session state
 
-    For Day One, this only supports:
-    
-    - Initializing a vault
-    
-    - Unlocking a vault
+    banner()
 
+    # -------------------------------
+    # Fresh session: delete old vault silently (for demo purposes only, this would not be relevent for a real password manager as it would render it useless since the data would be deleted each session).
+    # -------------------------------
+    if os.path.exists(VAULT_FILE):
+        os.remove(VAULT_FILE)
 
-    Features like adding entries come later.
-    """
+    # -------------------------------
+    # Create new vault and unlock for this session
+    # -------------------------------
+    master_password = getpass.getpass("Create master password: ")
+    vault, salt = initialize_vault(master_password)
+    vault = unlock_vault(master_password, salt)
+    APP_STATE = "UNLOCKED"
+    status_bar(APP_STATE)
 
-    print("Welcome to Vault Keeper!")
-
-    if not os.path.exists(VAULT_FILE):
-        master_password = input("Create a master password: ")
-        initialize_vault(master_password)
-    else:
-        master_password = input("Enter master password to unlock vault: ")
-        vault = unlock_vault(master_password)
-
-        if vault is not None:
-            print("✔ Vault unlocked.")
-            print("Stored entries:", vault)
-
+    # -------------------------------
+    # Main menu loop
+    # -------------------------------
+    while True:
+        choice = menu()
+        if choice == "1":  # Add Entry
+            vault = add_entry(vault)
+            save_vault(vault, master_password, salt)
+        elif choice == "2":  # View Entries
+            print(json.dumps(vault, indent=2))
+        elif choice == "3":  # Exit
+            status_bar("EXITING")
+            print("Goodbye.")
+            break
+        else:
+            print("Invalid option.")
 
 # =========================
-# Run Program
+# Entry Point
 # =========================
-
 if __name__ == "__main__":
     main()
