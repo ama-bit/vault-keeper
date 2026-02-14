@@ -67,19 +67,21 @@ At a high level:
 
 Vault Keeper assumes a **local, educational environment**.  
 
-**Defends against:**
+### **Defends against:**
 
 - Storing plaintext passwords in memory carelessly.
   
 *Demonstrating encryption/decryption workflow*. 
 
-**Does not defend against:**  
+
+### **Does not defend against:**  
 
 - Malware or keyloggers.
   
 - Weak master passwords.
   
 - OS compromise or advanced cryptographic attacks.  
+
 
 > ⚠️ This threat model is intentionally limited for learning purposes.  
 
@@ -97,7 +99,7 @@ Vault Keeper assumes a **local, educational environment**.
 
 - `json` (dict serialization for encryption/decryption)  
 
-*(All operations occur in memory; no files are written.)*  
+*(All operations occur in memory, no files are written.)*  
 
 ---
 
