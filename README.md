@@ -9,7 +9,7 @@
 
 ---
 
-## Goals
+## Objective
 
 1. Learn how passwords can be encrypted at rest (in memory).
      
